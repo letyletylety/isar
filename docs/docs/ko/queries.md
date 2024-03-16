@@ -4,13 +4,13 @@ title: 쿼리
 
 # 쿼리
 
-쿼리는 특정 조건들에 맞는 레코드들을 찾는 방법입니다. 예:
+쿼리는 특정 조건들에 맞는 레코드들을 찾는 방법입니다. 예시:
 
 - 별표로 표시된 모든 연락처를 찾습니다.
 - 연락처에서 고유한 이름들을 찾습니다.
 - 성이 정의되지 않은 모든 연락처를 삭제합니다.
 
-쿼리는 다트가 아닌 데이터베이스에서 실행되기 때문에 매우 빠릅니다. 인덱스를 똑똑하게 사용하면 쿼리 성능을 더욱 더 향상시킬 수 있습니다. 아래에서는 쿼리를 작성하는 방법과 쿼리를 가능한 한 빨리 작성하는 방법에 대해 알아봅니다.
+쿼리는 다트가 아니라 데이터베이스에서 실행되기 때문에 매우 빠릅니다. 인덱스를 똑똑하게 사용하면 쿼리 성능을 더욱 더 향상시킬 수 있습니다. 아래에서는 쿼리를 작성하는 방법과 쿼리를 가능한 한 빨리 작성하는 방법에 대해 알아봅니다.
 
 레코드들을 필터링하는 방법에는 2가지가 있습니다. 필터를 이용하는 방법과 where 절을 이용하는 방법입니다. 먼저 필터 사용법에 대해 알아보겠습니다.
 
@@ -18,7 +18,7 @@ title: 쿼리
 
 필터는 사용하기 쉽고 이해하기 쉽습니다. 속성들의 타입에 따라 다양한 필터 작업이 가능합니다. 필터 작업들은 대부분 알기 쉬운 이름들을 사용합니다.
 
-필터는 필터링할 컬렉션의 모든 객체에 대한 식을 계산해서 작동합니다. 표현식이 `true` 로 결정되면 Isar 는 결과에 객체를 포함합니다. 필터는 결과 순서에 영향을 주지 않습니다.
+필터는 필터링할 컬렉션의 모든 객체에 대한 조건식을 계산해서 작동합니다. 조건 표현식이 `true` 인 경우, Isar 는 결과에 해당 객체를 포함합니다. 필터는 결과들의 순서에 영향을 주지 않습니다.
 
 아래에 나오는 예제들에서는 다음 모델을 사용합니다.
 
@@ -49,7 +49,7 @@ class Shoe {
 | `.isNotNull()`           | `null` 이 아닌 값들.                                                                                                   |
 | `.length()`              | List, String, 링크에 있는 요소의 개수를 기반으로 한 길이 쿼리 필터                                                     |
 
-데이터베이스에 크기가 39, 40, 46, `null` 인 신발 4켤레가 있다고 가정해보자.
+데이터베이스에 크기가 39, 40, 46, `null` 인 신발 4켤레가 있다고 가정해봅시다.
 정렬을 따로 하지 않으면, ID별로 정렬된 값이 반환됩니다.
 
 ```dart
@@ -157,11 +157,11 @@ final result = await isar.shoes.filter()
 | 수정자                | 설명                                                                                                                            |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `.optional(cond, qb)` | `condition` 이 `true` 인 경우에만 쿼리를 확장합니다. 조건부로 정렬하거나 제한하기 위해서 쿼리의 모든 곳에서 사용할 수 있습니다. |
-| `.anyOf(list, qb)`    | `value` 의 각 값에 대한 쿼리를 확장하고 논리적 **or** 을 사용해서 조건을 결합합니다.                                            |
-| `.allOf(list, qb)`    | `value` 의 각 값에 대한 쿼리를 확장하고 논리적 **and** 를 사용해서 조건을 결합합니다.                                           |
+| `.anyOf(list, qb)`    | `list` 의 각 값에 대해서 쿼리하고 논리적 **or** 을 사용해서 조건을 결합합니다.                                            |
+| `.allOf(list, qb)`    | `list` 의 각 값에 대해서 쿼리하고 논리적 **and** 를 사용해서 조건을 결합합니다.                                           |
 |                       |
 
-이 예시에서, 선택적 필터를 사용해서 신발을 찾는 메서드를 만듭니다.
+아래 예시에서, `optional` 필터를 사용해서 신발을 찾는 메서드를 만듭니다.
 
 ```dart
 Future<List<Shoe>> findShoes(Id? sizeFilter) {
@@ -173,7 +173,7 @@ Future<List<Shoe>> findShoes(Id? sizeFilter) {
 }
 ```
 
-여러 신발 크기 중 하나를 가진 모든 신발을 찾으려면, 일반적인 쿼리를 작성하거나 `anyOf()` 수정자를 사용할 수 있습니다:
+여러 신발 크기 중 하나를 가진 모든 신발을 찾으려면, shoes1 처럼 일반적인 쿼리를 작성하거나 shoes2 처럼 `anyOf()` 수정자를 사용할 수 있습니다:
 
 ```dart
 final shoes1 = await isar.shoes.filter()
@@ -193,7 +193,7 @@ final shoes2 = await isar.shoes.filter()
 // shoes1 == shoes2
 ```
 
-쿼리 수정자는 동적 쿼리를 작성할 때 특히 유용합니다.
+쿼리 수정자는 동적으로 쿼리를 작성할 때 특히 유용합니다.
 
 ### 리스트
 
@@ -209,7 +209,7 @@ class Tweet {
 }
 ```
 
-리스트의 길이에 대해서 쿼리할 수 있습니다.
+리스트의 길이에 대해서도 쿼리할 수 있습니다.
 
 ```dart
 final tweetsWithoutHashtags = await isar.tweets.filter()
@@ -221,7 +221,7 @@ final tweetsWithManyHashtags = await isar.tweets.filter()
   .findAll();
 ```
 
-다트 코드로 `tweets.where((t) => t.hashtags.isEmpty);` 와 `tweets.where((t) => t.hashtags.length > 5);` 같습니다. 리스트 요소에 대해서 쿼리할 수 있습니다.
+다트 식으로 작성하면 `tweets.where((t) => t.hashtags.isEmpty);` 와 `tweets.where((t) => t.hashtags.length > 5);` 과 같습니다. 리스트 요소에 대해서도 쿼리할 수 있습니다.
 
 ```dart
 final flutterTweets = await isar.tweets.filter()
@@ -233,7 +233,7 @@ final flutterTweets = await isar.tweets.filter()
 
 ### 임베드된 객체들
 
-임베드된 객체는 Isar 의 가장 유용한 기능 중 하나 입니다. 최상위 객체와 동일한 조건을 사용하여 매우 효율적으로 쿼리할 수 있습니다. 다음과 같은 모델이 있다고 가정합시다:
+임베드된 객체는 Isar 의 가장 유용한 기능 중 하나입니다. 탑레벨 객체(top-level objects) 와 동일한 조건을 사용하여 매우 효율적으로 쿼리할 수 있습니다. 다음과 같은 모델이 있다고 가정합시다:
 
 ```dart
 @collection
@@ -251,7 +251,7 @@ class Brand {
 }
 ```
 
-`BMW` 라는 브랜드와 `"Germany"` 라는 나라를 갖는 모든 차들을 쿼리하고 싶습니다. 다음 쿼리를 사용해서 이 작업을 수행할 수 있습니다.
+`BMW` 라는 브랜드와 `"Germany"` 라는 나라를 갖는 모든 차들을 쿼리하고 싶습니다. 다음 쿼리를 사용해서 이 작업을 수행할 수 있습니다:
 
 ```dart
 final germanCars = await isar.cars.filter()
@@ -262,7 +262,7 @@ final germanCars = await isar.cars.filter()
   ).findAll();
 ```
 
-항상 중첩된 쿼리들을 그룹화하세요. 위의 쿼리가 다음 쿼리보다 효율적입니다. 결과는 같겠지만요:
+항상 쿼리를 중첩해서 그룹화하는게 좋습니다. 위의 쿼리가 다음 쿼리보다 효율적입니다. 결과는 같겠지만요:
 
 ```dart
 final germanCars = await isar.cars.filter()
@@ -277,7 +277,7 @@ final germanCars = await isar.cars.filter()
 모델이 [링크와 백링크](links) 를 포함하고 있다면 연결된 객체 또는 연결된 객체 수를 기준으로 쿼리를 필터링 할 수 있습니다.
 
 :::warning
-Isar 는 링크된 객체를 조회해야 하므로 링크 쿼리의 비용은 비쌀 수 있습니다. 대신 임베드된 객체를 사용하는 것을 고려해 보십시오.
+Isar 는 링크된 객체를 조회해야 하므로 링크 쿼리의 비용은 비쌀 수 있습니다. 대신 임베드된 객체를 사용하는 것을 고려해 보세요.
 :::
 
 ```dart
@@ -341,7 +341,7 @@ filter 와 달리 where 절은 쿼리 조건을 검사하기 위해서 스키마
 
 ```dart
 @collection
-class Shoe with IsarObject {
+class Shoe {
   Id? id;
 
   @Index()
@@ -354,9 +354,9 @@ class Shoe with IsarObject {
 }
 ```
 
-두 개의 인덱스가 있습니다. `size` 의 인덱스를 사용하면 `.sizeEqualTo()` 와 같은 절을 사용할 수 있습니다. `isUnisex` 의 합성 인덱스는 `isUnisexSizeEqualTo()` 와 같은 where 절을 가능하게 합니다. 하지만 인덱스의 접두사를 항상 사용할 수 있기 때문에 `isUnisexEqualTo()` 도 허용됩니다.
+두 개의 인덱스가 있습니다. `size` 의 인덱스를 사용하면 `.sizeEqualTo()` 와 같은 where 절을 사용할 수 있습니다. `isUnisex` 에 작성한 합성 인덱스(composite index) 는 `isUnisexSizeEqualTo()` 와 같은 where 절을 가능하게 합니다. 하지만 인덱스의 접두사를 항상 사용할 수 있기 때문에 일반적인 `isUnisexEqualTo()` 도 허용됩니다.
 
-우리는 복합 인덱스를 사용해서 46사이즈의 남녀공용 신발을 찾는 이전의 쿼리를 다시 작성할 수 있습니다. 이 쿼리는 이전 쿼리보다 훨씬 빨라집니다:
+우리는 합성 인덱스를 사용해서 46 사이즈의 남녀공용 신발을 찾는 이전의 쿼리를 다시 작성할 수 있습니다. 이 쿼리는 이전 쿼리보다 훨씬 빨라집니다:
 
 ```dart
 final result = isar.shoes.where()
@@ -366,9 +366,9 @@ final result = isar.shoes.where()
 
 where 절은 2개의 초능력을 더 가지고 있습니다: "무료" 정렬과 초고속 구별(distinct) 작업을 제공합니다.
 
-### where 절과 filter 결합하기
+### where 절과 filter 를 결합하기
 
-`shoes.filter()` 쿼리가 기억나죠? 그건 사실 `shoes.where().filter()` 의 줄임 표현입니다. 양 쪽의 장점들을 사용하기 위해서 하나의 쿼리 안에서 where 절과 filter 를 결합할 수 있습니다.
+`shoes.filter()` 쿼리가 기억나죠? 그건 사실 `shoes.where().filter()` 의 줄임 표현입니다. 양 쪽의 장점들을 사용하기 위해서 하나의 쿼리 안에서 where 절과 filter 를 결합할 수 있습니다:
 
 ```dart
 final result = isar.shoes.where()
@@ -379,7 +379,6 @@ final result = isar.shoes.where()
 ```
 
 필터링할 개체 수를 줄이기 위해서 where 절이 먼저 적용됩니다. 남은 객체들에 필터가 적용됩니다.
-The where clause is applied first to reduce the number of objects to be filtered. Then the filter is applied to the remaining objects.
 
 ## 정렬
 
@@ -394,11 +393,11 @@ final sortedShoes = isar.shoes.filter()
   .findAll();
 ```
 
-특히 정렬은 오프셋과 제한 이전에 실행되기 때문에, 많은 결과를 정렬하는 것은 비용이 많이 듭니다. 위의 정렬 방법은 인덱스를 사용하지 않습니다. 다행히, 우리는 where 절 정렬을 다시 사용할 수 있고 백만 개의 객체를 정렬하는 경우에도 번개처럼 빠르게 수행할 수 있습니다.
+많은 결과를 정렬하는 것은 비용이 많이 듭니다. offset과 limit를 설정하기 전에 정렬하는 것은 특히 더 비싼 작업입니다. 위의 정렬 방법은 인덱스를 이용하고 있지 않습니다. 다행히도, 우리는 이제 배울 where 절 정렬을 사용해서 백만 개의 객체를 정렬하는 경우에도 번개처럼 빠르게 수행할 수 있습니다.
 
 ### where 절 정렬
 
-쿼리에 **단일** where 절을 사용하는 경우 결과가 이미 인덱스 기준으로 정렬되어 있습니다. 정말 큰일입니다!
+쿼리에 **단일** where 절을 사용하는 경우 결과가 이미 인덱스 기준으로 정렬되어 있습니다. 대박!
 
 신발의 크기가 `[43, 39, 48, 40, 42, 45]` 이고 `42` 보다 큰 모든 신발을 찾고 크기별로 정렬한다고 가정해 보겠습니다.
 
@@ -424,7 +423,7 @@ final shoes = await isar.shoes.where()
   .findAll(); // -> [39, 40, 42, 43, 45, 48]
 ```
 
-복합 인덱스를 사용하는 경우, 인덱스의 모든 필드 별로 결과가 정렬됩니다.
+합성 인덱스를 사용하는 경우, 인덱스의 모든 필드 별로 결과가 정렬됩니다.
 
 :::tip 
 결과를 정렬해야 하는 경우 인덱스를 사용하는 게 좋습니다. 특히 `offset()` 과 `limit()` 를 사용하여 작업하는 경우에는 더욱 그렇습니다.
@@ -434,7 +433,7 @@ final shoes = await isar.shoes.where()
 
 ## 고유한 값들 (Unique values)
 
-고유한 값들로만 이루어진 항목들을 반환하려면 distinct 술어를 사용하세요. 예를 들어, Isar 데이터베이스에 있는 신발 모델의 수를 확인하려면 다음과 같이 하세요.
+고유한 값들로만 이루어진 항목들을 반환하려면 distinct 술어(predicate)를 사용하세요. 예를 들어, Isar 데이터베이스에 있는 신발 모델의 종류를 확인하려면 다음과 같이 하세요.
 
 ```dart
 final shoes = await isar.shoes.filter()
@@ -442,7 +441,7 @@ final shoes = await isar.shoes.filter()
   .findAll();
 ```
 
-여러 개의 개별 조건들을 체인으로 연결해서 모델 크기 조합이 다른 모든 신발을 찾을 수 있습니다.
+여러 개의 고유 조건들을 연쇄해서 모델 크기 조합이 다른 모든 신발을 찾을 수 있습니다.
 
 ```dart
 final shoes = await isar.shoes.filter()
@@ -464,8 +463,7 @@ final shoes = await isar.shoes.where(distinct: true)
 ```
 
 :::tip
-이론적으로는 정렬 및 구분을 위해서 여러 개의 where 절을 사용하 수 있습니다. 유일한 제약은 where 절이 중복되지 않고 동일한 인덱스를 사용하는 것입니다. 올바른 정렬을 위해서는 정렬 순서로 적용해야 합니다. 이것에 의존하는 것은 매우 조심하세요!
-In theory, you could even use multiple where clauses for sorting and distinct. The only restriction is that those where clauses are not overlapping and use the same index. For correct sorting, they also need to be applied in sort order. Be very careful if you rely on this!
+이론적으로는 정렬 및 구분을 위해서 여러 개의 where 절을 사용하 수 있습니다. 유일한 제약은 where 절이 중복되지 않고 동일한 인덱스를 사용하는 해야 한다는 것입니다. 올바른 정렬을 위해서는 정렬 순서로 적용해야 합니다. 이것에 의존하는 것은 매우 조심하세요!
 :::
 
 ## 오프셋과 제한(Offset & Limit)
